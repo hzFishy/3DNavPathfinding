@@ -153,7 +153,7 @@ int FCPathfindingThread::GetTaskCount()
 	return CurrentTaskCount.load();
 }
 
-void FCPathfindingThread::AssignTask(FCPathRequest& FindPathRequest)
+void FCPathfindingThread::AssignTask(const FCPathRequest& FindPathRequest)
 {
 	InputQueue.Enqueue(FindPathRequest);
 	CurrentTaskCount++;

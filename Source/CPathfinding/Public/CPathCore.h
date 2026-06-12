@@ -22,29 +22,29 @@ class CPATHFINDING_API ACPathCore : public AActor
 	GENERATED_BODY()
 
 	friend class FCPathfindingThread;
+	
 public:
-
-	~ACPathCore();
-
+	virtual ~ACPathCore() override;
 	
 	static ACPathCore* GetInstance(UWorld* World);
 	static bool DoesInstanceExist();
 	static void EnableNewInstanceCreation();
 
 	virtual void Tick(float DeltaSeconds) override;
-	virtual void BeginPlay() override;
 	virtual void BeginDestroy() override;
+	
+protected:
+	virtual void BeginPlay() override;
 	virtual void EndPlay(EEndPlayReason::Type EndPlayReason) override;
 
+public:
 	// This is called by CPathVolumes before Octrees are deleted
 	// BeginDestroy() is latent and may ba called AFTER Octree is deleted, causing a crash
 	// so this is necessary
 	void StopAndDeleteThreads();
 
 	// Using this directly is unsafe, please use the FindPathAsync function in ACPathVolume class.
-	void AssignAsyncRequest(FCPathRequest& Request);
-
-	
+	void AssignAsyncRequest(const FCPathRequest& Request);
 
 protected:
 	ACPathCore();

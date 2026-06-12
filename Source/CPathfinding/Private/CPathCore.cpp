@@ -89,6 +89,13 @@ void ACPathCore::PrintCoreMessage(FString Message)
 #endif
 }
 
+ACPathCore::~ACPathCore()
+{
+	PrintCoreMessage(FString("Destructor"));
+	StopAndDeleteThreads();
+}
+
+
 // Called every frame
 void ACPathCore::Tick(float DeltaTime)
 {
@@ -112,13 +119,6 @@ void ACPathCore::Tick(float DeltaTime)
 	}
 }
 
-ACPathCore::~ACPathCore()
-{
-	PrintCoreMessage(FString("Destructor"));
-	StopAndDeleteThreads();
-}
-
-
 FCPathfindingThread* ACPathCore::CreateThread(int ThreadIndex)
 {
 	FCPathfindingThread* FRunnableInstance = new FCPathfindingThread(this, ThreadIndex);
@@ -126,7 +126,7 @@ FCPathfindingThread* ACPathCore::CreateThread(int ThreadIndex)
 	return FRunnableInstance;
 }
 
-void ACPathCore::AssignAsyncRequest(FCPathRequest& Request)
+void ACPathCore::AssignAsyncRequest(const FCPathRequest& Request)
 {
 	int LeastBusyThread = 0;
 	int LeastTaskCount = MAX_int32;

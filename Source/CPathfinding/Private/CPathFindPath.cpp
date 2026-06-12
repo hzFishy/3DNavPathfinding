@@ -265,8 +265,13 @@ void CPathAStar::TransformToUserPath(CPathAStarNode* PathEndNode, TArray<FCPathN
 bool CPathAStar::CanSkip(FVector Start, FVector End)
 {
 	FHitResult HitResult;
-	CurrentVolumeRef->GetWorld()->SweepSingleByChannel(HitResult, Start, End, FQuat(FRotator(0, 0, 0)), CurrentVolumeRef->TraceChannel, CurrentVolumeRef->TraceShapesByDepth.back().back());
-
+	CurrentVolumeRef->GetWorld()->SweepSingleByChannel(
+		HitResult, 
+		Start, End, FQuat(FRotator(0, 0, 0)), 
+		CurrentVolumeRef->CollisionTraceChannel, 
+		CurrentVolumeRef->TraceShapesByDepth.back().back()
+	);
+	
 	return !HitResult.bBlockingHit;
 }
 
@@ -296,6 +301,7 @@ UCPathAsyncFindPath* UCPathAsyncFindPath::FindPathAsync(ACPathVolume* Volume, FV
 {
 #if WITH_EDITOR
 	checkf(IsValid(Volume), TEXT("CPATH - FindPathAsync:::Volume was invalid"));
+	if (!IsValid(Volume)) { return nullptr; }
 #endif
 
 	UCPathAsyncFindPath* Instance = NewObject<UCPathAsyncFindPath>();

@@ -9,17 +9,15 @@
 #include "HAL/RunnableThread.h"
 #include "Kismet/BlueprintAsyncActionBase.h"
 #include <atomic>
-#include <vector>
 #include <memory>
 #include <CPathDefines.h>
 #include "CPathFindPath.generated.h"
-
-
 class ACPathVolume;
 
+
 /**
-The class for pathfinding, used in UCPathAsyncFindPath. Can also be used on game thread to get the path instantly.
-*/
+ *The class for pathfinding, used in UCPathAsyncFindPath. Can also be used on game thread to get the path instantly.
+ */
 class CPathAStar
 {
 public:

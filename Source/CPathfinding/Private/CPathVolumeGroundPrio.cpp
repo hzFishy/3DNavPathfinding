@@ -3,6 +3,7 @@
 
 #include "CPathVolumeGroundPrio.h"
 
+
 void ACPathVolumeGroundPrio::CalcFitness(CPathAStarNode& Node, FVector TargetLocation, int32 UserData)
 {
 	// Standard weithted A* Heuristic, f(n) = g(n) + e*h(n).   (e = 3.5f)
@@ -10,18 +11,15 @@ void ACPathVolumeGroundPrio::CalcFitness(CPathAStarNode& Node, FVector TargetLoc
 	{
 		Node.DistanceSoFar = Node.PreviousNode->DistanceSoFar + FVector::Distance(Node.PreviousNode->WorldLocation, Node.WorldLocation);
 	}
+	
 	float CurrDistance = FVector::Distance(Node.WorldLocation, TargetLocation);
-
-
+	
 	if (CurrDistance > VoxelSize && !ExtractIsGroundFromData(Node.TreeUserData))
 	{
 		Node.DistanceSoFar += UserData;
 	}
-
-	Node.FitnessResult = Node.DistanceSoFar + 3.5f * CurrDistance;
-
-
 	
+	Node.FitnessResult = Node.DistanceSoFar + 3.5f * CurrDistance;
 }
 
 bool ACPathVolumeGroundPrio::RecheckOctreeAtDepth(CPathOctree* OctreeRef, FVector TreeLocation, uint32 Depth)
@@ -33,14 +31,16 @@ bool ACPathVolumeGroundPrio::RecheckOctreeAtDepth(CPathOctree* OctreeRef, FVecto
 	if (IsFree)
 	{
 		// Checking if this is a ground node
-		uint32 IsGround = GetWorld()->LineTraceTestByChannel(TreeLocation, FVector(TreeLocation.X, TreeLocation.Y, TreeLocation.Z - VoxelSize*1.49), TraceChannel);
+		uint32 IsGround = GetWorld()->LineTraceTestByChannel(
+			TreeLocation, 
+			FVector(TreeLocation.X, TreeLocation.Y, TreeLocation.Z - VoxelSize * 1.49), 
+			CollisionTraceChannel
+		);
 		
 		// Setting IsGround to 2nd bit in tree's data
 		OctreeRef->Data &= 0xFFFFFFFD;
 		OctreeRef->Data |= (IsGround << 1);
 	}
-
-
-	return IsFree;
 	
+	return IsFree;
 }

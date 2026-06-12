@@ -42,7 +42,7 @@ public:
 	// Includes the one that it's currently working on.
 	int GetTaskCount();
 
-	void AssignTask(FCPathRequest& FindPathRequest);
+	void AssignTask(const FCPathRequest& FindPathRequest);
 
 	void PrintThreadMessage(FString Message);
 	
