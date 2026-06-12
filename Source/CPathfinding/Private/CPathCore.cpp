@@ -7,86 +7,16 @@
 
 #include "CPathfindingThread.h"
 
-// Sets default values
+ACPathCore* ACPathCore::Instance = nullptr;
+bool ACPathCore::bWasInstanceCreated = false;
+
+	
+	/*----------------------------------------------------------------------------
+		Defaults
+	----------------------------------------------------------------------------*/
 ACPathCore::ACPathCore()
 {
 	PrimaryActorTick.bCanEverTick = true;
-}
-
-ACPathCore* ACPathCore::Instance = nullptr;
-bool ACPathCore::WasInstanceCreated = false;
-
-ACPathCore* ACPathCore::GetInstance(UWorld* World)
-{
-	if (!IsValid(Instance) && !WasInstanceCreated)
-	{
-		PrintCoreMessage(FString("Spawning Instance"));
-		Instance = World->SpawnActor<ACPathCore>();
-		WasInstanceCreated = true;
-	}
-	return Instance;
-}
-
-bool ACPathCore::DoesInstanceExist()
-{
-	return (bool)Instance;
-}
-
-void ACPathCore::EnableNewInstanceCreation()
-{
-	WasInstanceCreated = false;
-}
-
-// Called when the game starts or when spawned
-void ACPathCore::BeginPlay()
-{
-	Super::BeginPlay();
-	ExpectedThreadCount = FPlatformMisc::NumberOfCores() - 1;
-	//ExpectedThreadCount = 1;
-	for (int i = 0; i < ExpectedThreadCount; i++)
-	{
-		Threads.push_back(CreateThread(i));
-	}
-}
-
-void ACPathCore::BeginDestroy()
-{
-	StopAndDeleteThreads();
-	Instance = nullptr;
-	Super::BeginDestroy();
-}
-
-void ACPathCore::EndPlay(EEndPlayReason::Type EndPlayReason)
-{
-	StopAndDeleteThreads();
-	Instance = nullptr;
-	Super::EndPlay(EndPlayReason);
-}
-
-void ACPathCore::StopAndDeleteThreads()
-{
-	if (Threads.size() > 0)
-	{
-		PrintCoreMessage(FString("Deleting threads"));
-	}
-	while (Threads.size() > 0)
-	{
-		auto Thread = Threads.back();
-		Thread->EnsureCompletion();
-		delete Thread;
-		Threads.pop_back();
-	}
-
-	
-}
-
-
-void ACPathCore::PrintCoreMessage(FString Message)
-{
-#ifdef LOG_PATHFINDERS
-	if(LOG_PATHFINDERS > 1)
-		UE_LOG(LogTemp, Warning, TEXT("CORE: %s"), *Message);
-#endif
 }
 
 ACPathCore::~ACPathCore()
@@ -95,8 +25,6 @@ ACPathCore::~ACPathCore()
 	StopAndDeleteThreads();
 }
 
-
-// Called every frame
 void ACPathCore::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -119,7 +47,85 @@ void ACPathCore::Tick(float DeltaTime)
 	}
 }
 
-FCPathfindingThread* ACPathCore::CreateThread(int ThreadIndex)
+void ACPathCore::BeginDestroy()
+{
+	StopAndDeleteThreads();
+	Instance = nullptr;
+	
+	Super::BeginDestroy();
+}
+
+void ACPathCore::BeginPlay()
+{
+	Super::BeginPlay();
+	
+	ExpectedThreadCount = FPlatformMisc::NumberOfCores() - 1;
+	
+	for (int i = 0; i < ExpectedThreadCount; i++)
+	{
+		Threads.push_back(CreateThread(i));
+	}
+}
+
+void ACPathCore::EndPlay(EEndPlayReason::Type EndPlayReason)
+{
+	StopAndDeleteThreads();
+	Instance = nullptr;
+	
+	Super::EndPlay(EndPlayReason);
+}
+
+	
+	/*----------------------------------------------------------------------------
+		Core
+	----------------------------------------------------------------------------*/
+ACPathCore* ACPathCore::GetInstance(UWorld* World)
+{
+	if (!IsValid(Instance) && !bWasInstanceCreated)
+	{
+		PrintCoreMessage(FString("Spawning Instance"));
+		Instance = World->SpawnActor<ACPathCore>();
+		bWasInstanceCreated = true;
+	}
+	return Instance;
+}
+
+bool ACPathCore::DoesInstanceExist()
+{
+	return (bool)Instance;
+}
+
+void ACPathCore::EnableNewInstanceCreation()
+{
+	bWasInstanceCreated = false;
+}
+
+void ACPathCore::StopAndDeleteThreads()
+{
+	if (Threads.size() > 0)
+	{
+		PrintCoreMessage(FString("Deleting threads"));
+	}
+	while (Threads.size() > 0)
+	{
+		auto Thread = Threads.back();
+		Thread->EnsureCompletion();
+		delete Thread;
+		Threads.pop_back();
+	}
+
+	
+}
+
+void ACPathCore::PrintCoreMessage(FString Message)
+{
+#ifdef LOG_PATHFINDERS
+	if(LOG_PATHFINDERS > 1)
+		UE_LOG(LogTemp, Warning, TEXT("CORE: %s"), *Message);
+#endif
+}
+
+FCPathfindingThread* ACPathCore::CreateThread(int32 ThreadIndex)
 {
 	FCPathfindingThread* FRunnableInstance = new FCPathfindingThread(this, ThreadIndex);
 	

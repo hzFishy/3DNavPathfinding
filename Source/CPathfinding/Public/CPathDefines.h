@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 
 // TreeID settings
 // If you change these, you will also need to change some masks in functions like ReplaceDepth, ExtractDepth, etc
@@ -39,7 +38,6 @@ enum EAgentShape
 	Sphere = 0
 };
 
-// Wrong Start and End Location mean that requested location was out of volume, or it was inside an occupied space.
 UENUM()
 enum ECPathfindingFailReason
 {
@@ -47,10 +45,10 @@ enum ECPathfindingFailReason
 	VolumeNotValid,
 	VolumeNotGenerated,
 	Timeout,
+	/** Requested location was out of volume, or it was inside an occupied space. */
 	WrongStartLocation,
+	/** Requested location was out of volume, or it was inside an occupied space. */
 	WrongEndLocation,
 	EndLocationUnreachable,
 	Unknown
 };
-
-

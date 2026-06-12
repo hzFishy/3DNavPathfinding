@@ -16,9 +16,9 @@
 // --------------------------------------------------------
 // ---------------- A Star mehtods ------------------------
 
-CPathAStar::CPathAStar()
-{
-}
+CPathAStar::CPathAStar(): 
+	CurrentVolumeRef(nullptr)
+{}
 
 CPathAStar::~CPathAStar()
 {
@@ -260,8 +260,6 @@ void CPathAStar::TransformToUserPath(CPathAStarNode* PathEndNode, TArray<FCPathN
 
 }
 
-
-
 bool CPathAStar::CanSkip(FVector Start, FVector End)
 {
 	FHitResult HitResult;
@@ -299,11 +297,8 @@ void CPathAStar::SmoothenPath(CPathAStarNode* PathEndNode)
 
 UCPathAsyncFindPath* UCPathAsyncFindPath::FindPathAsync(ACPathVolume* Volume, FVector StartLocation, FVector EndLocation, int SmoothingPasses, int32 UserData, float TimeLimit)
 {
-#if WITH_EDITOR
-	checkf(IsValid(Volume), TEXT("CPATH - FindPathAsync:::Volume was invalid"));
 	if (!IsValid(Volume)) { return nullptr; }
-#endif
-
+	
 	UCPathAsyncFindPath* Instance = NewObject<UCPathAsyncFindPath>();
 	Instance->RegisterWithGameInstance(Volume->GetGameInstance());
 	Instance->Request.VolumeRef = Volume;
@@ -314,7 +309,6 @@ UCPathAsyncFindPath* UCPathAsyncFindPath::FindPathAsync(ACPathVolume* Volume, FV
 	Instance->Request.TimeLimit = TimeLimit;
 	return Instance;
 }
-
 
 void UCPathAsyncFindPath::Activate()
 {
@@ -332,17 +326,8 @@ void UCPathAsyncFindPath::Activate()
 		Request.RequestRawPath = false;
 		Request.RequestUserPath = true;
 		Request.VolumeRef->FindPathAsync(Request);
-		//CurrentThread = FRunnableThread::Create(RunnableFindPath, TEXT("CPath Pathfinding Thread"));
-		//AStar->Volume->GetWorld()->GetTimerManager().SetTimer(CheckThreadTimerHandle, this, &UCPathAsyncFindPath::CheckThreadStatus, 1.f / 30.f, true);
 	}
 }
-
-void UCPathAsyncFindPath::BeginDestroy()
-{
-	Super::BeginDestroy();
-
-}
-
 
 void UCPathAsyncFindPath::OnPathFound(FCPathResult& PathResult)
 {

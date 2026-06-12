@@ -90,10 +90,10 @@ class CPATHFINDING_API UCPathAsyncFindPath : public UBlueprintAsyncActionBase
 
 public:
 	UPROPERTY(BlueprintAssignable)
-		FResponseDelegate Success;
+	FResponseDelegate Success;
 
 	UPROPERTY(BlueprintAssignable)
-		FResponseDelegate Failure;
+	FResponseDelegate Failure;
 
 	FCPathRequest Request;
 
@@ -103,12 +103,11 @@ public:
 	// With SmoothingPasses=0, the path will be very jagged since the graph is Discrete.
 	// With SmoothingPasses > 2 there is a potential loss of data, especially if the CalcFitness method has been overriden
 	UFUNCTION(BlueprintCallable, Category = CPath, meta = (BlueprintInternalUseOnly = "true"))
-		static UCPathAsyncFindPath* FindPathAsync(class ACPathVolume* Volume, FVector StartLocation, FVector EndLocation, int SmoothingPasses = 2, int32 UserData = 0, float TimeLimit = 0.2f);
-
+	static UCPathAsyncFindPath* FindPathAsync(class ACPathVolume* Volume, FVector StartLocation, FVector EndLocation, int SmoothingPasses = 2, int32 UserData = 0, float TimeLimit = 0.2f);
+	
 	UFUNCTION()
-		void OnPathFound(FCPathResult& PathResult);
-
+	void OnPathFound(FCPathResult& PathResult);
+	
 	virtual void Activate() override;
-	virtual void BeginDestroy() override;
 };
 

@@ -2,16 +2,11 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "CPathDefines.h"
 #include "CPathNode.generated.h"
 
-/**
- *
- */
 
-
- // Internal class used while generating path
+// Internal class used while generating path
 class CPATHFINDING_API CPathAStarNode
 {
 public:
