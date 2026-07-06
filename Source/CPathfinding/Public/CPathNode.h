@@ -69,21 +69,15 @@ struct CPATHFINDING_API FCPathNode
 {
 	GENERATED_BODY()
 
-		FCPathNode() {}
-	FCPathNode(FVector Location)
-		:
-		WorldLocation(Location)
-	{}
-
-
+	FCPathNode();
+	FCPathNode(FVector Location);
+	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = CPath)
-		FVector WorldLocation;
-
+	FVector WorldLocation;
+	
 	// Normalized vector pointing to next node. ZeroVector on last node.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = CPath)
-		FVector Normal = FVector(0, 0, 0);
-
-
+	FVector Normal;
 };
 
 // Data returned by FindPath call
